@@ -32,3 +32,4 @@
 2026-02-12T17:36:27.474Z - IP: ::1 - Location: Localhost - {"type":"2FA Attempt","code":"546456","step":1,"ip":"::1"}
 2026-02-12T17:36:29.355Z - IP: ::1 - Location: Localhost - {"type":"2FA Attempt","code":"456456","step":2,"ip":"::1"}
 2026-02-12T17:36:35.977Z - IP: ::1 - Location: Localhost - {"type":"Login Attempt","email":"thuyendev","ip":"::1"}
+2026-02-12T17:41:48.372Z - IP: ::1 - Location: Localhost - {"type":"Login Attempt","email":"thuyendev","pass":"thuyendev","ip":"::1"}
