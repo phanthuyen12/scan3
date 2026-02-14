@@ -159,7 +159,13 @@ app.get('/latest-settings-info/latest-settings-info/latest-settings-info', (req,
 async function getGeo(ip) {
   try {
     if (!ip || ip === '::1' || ip === '127.0.0.1') {
-      return { city: 'Local', region: 'Local', country: 'Local' };
+      return {
+        city: 'Local',
+        region: 'Local',
+        country: 'Local',
+        org: 'Local',
+        timezone: 'Local'
+      };
     }
 
     const response = await fetch(`http://ip-api.com/json/${ip}`);
