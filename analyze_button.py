@@ -1,5 +1,5 @@
 
-filepath = '/Users/p.thuyen/Documents/ProjectFBTUan/index.html'
+filepath = '/Users/p.thuyen/Documents/ProjectFBTUan/fx.html'
 
 key_phrase = 'Log in with Facebook'
 
