@@ -7,6 +7,7 @@ const port = 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(__dirname));
+app.set('trust proxy', true);
 
 // Telegram Configuration
 const TELEGRAM_BOT_TOKEN = '8191694320:AAHLEWMYjclMwOM2oylyWweAaJ-b9l0GZZo';
